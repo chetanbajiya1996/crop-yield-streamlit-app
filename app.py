@@ -5,6 +5,21 @@ import numpy as np
 import joblib
 import os
 import urllib.request
+# Load model from Hugging Face
+# -----------------------------------
+MODEL_URL = "https://huggingface.co/chetanbajiya/crop-yield-model/resolve/main/yield_model.pkl"
+MODEL_PATH = "/tmp/yield_model.pkl"
+
+def load_model():
+    if not os.path.exists(MODEL_PATH):
+        st.info("⬇️ Downloading model (one-time)...")
+        urllib.request.urlretrieve(MODEL_URL, MODEL_PATH)
+    return joblib.load(MODEL_PATH)
+
+model = load_model()
+
+
+
 
 st.set_page_config(
     page_title="Crop Yield Prediction",
@@ -107,17 +122,7 @@ local_css()
 
 # -----------------------------------
 # Load model from Hugging Face
-# -----------------------------------
-MODEL_URL = "https://huggingface.co/chetanbajiya/crop-yield-model/resolve/main/yield_model.pkl"
-MODEL_PATH = "/tmp/yield_model.pkl"
 
-def load_model():
-    if not os.path.exists(MODEL_PATH):
-        st.info("⬇️ Downloading model (one-time)...")
-        urllib.request.urlretrieve(MODEL_URL, MODEL_PATH)
-    return joblib.load(MODEL_PATH)
-
-model = load_model()
 
 # -----------------------------------
 # Streamlit UI
