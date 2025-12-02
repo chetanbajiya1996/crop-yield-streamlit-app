@@ -7,6 +7,7 @@ import gdown
 
 MODEL_PATH = "yield_model.pkl"
 
+
 @st.cache_resource
 def load_model():
     if not os.path.exists(MODEL_PATH):
@@ -15,6 +16,7 @@ def load_model():
     return joblib.load(MODEL_PATH)
 
 model = load_model()
+
 
 st.set_page_config(page_title="Crop Yield Prediction")
 
