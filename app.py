@@ -5,13 +5,18 @@ import joblib
 import os
 import gdown
 
-MODEL_PATH = "/tmp/yield_model.pkl"   # ✅ writable on Streamlit Cloud
+MODEL_PATH = "/tmp/yield_model.pkl"
 
 def load_model():
     if not os.path.exists(MODEL_PATH):
-        st.info("Downloading model from Google Drive...")
-        url = "https://drive.google.com/uc?id=1yDuyeNwzgZmgyx34qcXHJ8Cc8t4EFh4A"
-        gdown.download(url, MODEL_PATH, quiet=False)
+        st.info("⬇️ Downloading model from Google Drive (one-time)...")
+        url = "https://drive.google.com/uc?export=download&id=1yDuyeNwzgZmgyx34qcXHJ8Cc8t4EFh4A"
+        gdown.download(
+            url,
+            MODEL_PATH,
+            quiet=False,
+            fuzzy=True
+        )
     return joblib.load(MODEL_PATH)
 
 model = load_model()
