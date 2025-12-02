@@ -3,34 +3,35 @@ import pandas as pd
 import numpy as np
 import joblib
 import os
-import gdown
+import urllib.request
 
+# -----------------------------------
+# Load model from Hugging Face
+# -----------------------------------
+MODEL_URL = "https://huggingface.co/chetanbajiya/crop-yield-model/resolve/main/yield_model.pkl"
 MODEL_PATH = "/tmp/yield_model.pkl"
 
 def load_model():
     if not os.path.exists(MODEL_PATH):
-        st.info("⬇️ Downloading model from Google Drive (one-time)...")
-        url = "https://drive.google.com/uc?export=download&id=1yDuyeNwzgZmgyx34qcXHJ8Cc8t4EFh4A"
-        gdown.download(
-            url,
-            MODEL_PATH,
-            quiet=False,
-            fuzzy=True
-        )
+        st.info("⬇️ Downloading model (one-time)...")
+        urllib.request.urlretrieve(MODEL_URL, MODEL_PATH)
     return joblib.load(MODEL_PATH)
 
 model = load_model()
 
-
-
+# -----------------------------------
+# Streamlit UI
+# -----------------------------------
 st.set_page_config(page_title="Crop Yield Prediction")
 
 st.title("🌾 Crop Yield Prediction App")
+st.write("Enter District, Crop Type, and Year to predict yield")
 
 district = st.text_input("District", "Amreli")
 crop = st.selectbox("Crop", ["Wheat", "Rice", "Maize", "Cotton"])
 year = st.number_input("Year", 2000, 2050, 2021)
 
+# Default values used during training
 state_name = "Gujarat"
 temperature = 28.0
 humidity = 65.0
@@ -52,4 +53,4 @@ if st.button("Predict Yield"):
     pred_log = model.predict(df)
     result = np.expm1(pred_log)[0]
 
-    st.success(f"✅ Predicted Yield: {result:.2f}")
+    st.success(f"✅ Predicted Crop Yield: {result:.2f} units")
