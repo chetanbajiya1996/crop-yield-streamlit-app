@@ -5,17 +5,17 @@ import joblib
 import os
 import gdown
 
-MODEL_PATH = "yield_model.pkl"
+MODEL_PATH = "/tmp/yield_model.pkl"   # ✅ writable on Streamlit Cloud
 
-
-@st.cache_resource
 def load_model():
     if not os.path.exists(MODEL_PATH):
+        st.info("Downloading model from Google Drive...")
         url = "https://drive.google.com/uc?id=1yDuyeNwzgZmgyx34qcXHJ8Cc8t4EFh4A"
         gdown.download(url, MODEL_PATH, quiet=False)
     return joblib.load(MODEL_PATH)
 
 model = load_model()
+
 
 
 st.set_page_config(page_title="Crop Yield Prediction")
