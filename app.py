@@ -18,28 +18,61 @@ def load_model():
 
 model = load_model()
 
-
-
-
 st.set_page_config(
-    page_title="Crop Yield Prediction",
+    page_title="Crop Yield Prediction Dashboard",
     page_icon="🌾",
     layout="wide"
 )
 
-st.title("🌾 Crop Yield Prediction System")
+st.markdown("""
+<style>
+.main {
+    background-color: #f4f6f9;
+}
+.css-18e3th9 {
+    padding: 2rem;
+}
+.css-1d391kg {
+    background-color: #ffffff;
+}
+.card {
+    background-color: white;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+}
+.title {
+    font-size: 36px;
+    font-weight: 700;
+}
+.subtitle {
+    font-size: 18px;
+    color: #555;
+}
+.result {
+    font-size: 40px;
+    font-weight: 700;
+    color: #2E7D32;
+}
+</style>
+""", unsafe_allow_html=True)
+
 
 st.markdown("""
-This application predicts **crop yield** based on  
-📍 **Location**, 🌱 **Crop Type**, and 📅 **Year**  
-using a trained **Machine Learning model**.
-""")
+<div class="card">
+  <div class="title">🌾 Crop Yield Prediction Dashboard</div>
+  <div class="subtitle">
+    Machine Learning based yield estimation using location & crop information
+  </div>
+</div>
+""", unsafe_allow_html=True)
 
-st.markdown("---")
+st.markdown("<br>", unsafe_allow_html=True)
+
 
 st.sidebar.header("🔧 Input Parameters")
 
-district = st.sidebar.text_input("📍 District", "Amreli")
+district = st.sidebar.text_input("📍 District Name", "Amreli")
 
 crop = st.sidebar.selectbox(
     "🌱 Crop Type",
@@ -54,13 +87,13 @@ year = st.sidebar.number_input(
 )
 
 st.sidebar.markdown("---")
-st.sidebar.info("Model uses average climate\nvalues internally.")
+st.sidebar.info("ℹ️ Climate & field parameters\nare set to average values.")
 
 
-st.subheader("📊 Yield Prediction Result")
+st.markdown("<br>", unsafe_allow_html=True)
 
-if st.button("🚀 Predict Yield"):
-    with st.spinner("Running model prediction..."):
+if st.button("🚀 Predict Crop Yield", use_container_width=True):
+    with st.spinner("⏳ Running prediction model..."):
         df = pd.DataFrame([{
             "State_Name": "Gujarat",
             "District_Name": district,
@@ -77,48 +110,42 @@ if st.button("🚀 Predict Yield"):
 
     col1, col2, col3 = st.columns(3)
 
-    col1.metric("🌾 Crop", crop)
-    col2.metric("📍 District", district)
-    col3.metric("📦 Predicted Yield", f"{predicted_yield:.2f}")
+    with col1:
+        st.markdown(f"""
+        <div class="card">
+            <h4>📍 District</h4>
+            <h2>{district}</h2>
+        </div>
+        """, unsafe_allow_html=True)
 
-    st.success("✅ Prediction completed successfully")
+    with col2:
+        st.markdown(f"""
+        <div class="card">
+            <h4>🌱 Crop</h4>
+            <h2>{crop}</h2>
+        </div>
+        """, unsafe_allow_html=True)
 
-st.markdown("---")
-st.subheader("ℹ️ Model Information")
+    with col3:
+        st.markdown(f"""
+        <div class="card">
+            <h4>📦 Predicted Yield</h4>
+            <div class="result">{predicted_yield:.2f}</div>
+        </div>
+        """, unsafe_allow_html=True)
+
+
+st.markdown("<br><hr>", unsafe_allow_html=True)
 
 st.markdown("""
-- **Algorithm:** Extra Trees Regressor  
-- **Target Variable:** Crop Production (Yield)  
-- **Features Used:**  
-  - State  
-  - District  
-  - Crop Type  
-  - Crop Year  
-  - Temperature  
-  - Humidity  
-  - Soil Moisture  
-  - Area  
+**Model Details**
+- Algorithm: Extra Trees Regressor  
+- Deployment: Streamlit Cloud  
+- Model Hosting: Hugging Face  
+- Prediction Domain: Agriculture  
 
-- **Deployment:** Streamlit Cloud  
-- **Model Hosting:** Hugging Face Hub
+© Crop Yield Prediction System
 """)
-
-st.caption("© Crop Yield Prediction | ML Deployment Project")
-
-
-def local_css():
-    st.markdown(
-        """
-        <style>
-        .stApp {
-            background-color: #f5f7fa;
-        }
-        </style>
-        """,
-        unsafe_allow_html=True
-    )
-
-local_css()
 
 # -----------------------------------
 # Load model from Hugging Face
