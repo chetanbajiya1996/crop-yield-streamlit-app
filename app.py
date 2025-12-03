@@ -5,96 +5,114 @@ import joblib
 import os
 import urllib.request
 
-# -----------------------------------------------------
-# Load Model From Hugging Face
-# -----------------------------------------------------
+# =============================================================
+# 1️⃣ LOAD MODEL FROM HUGGING FACE
+# =============================================================
 MODEL_URL = "https://huggingface.co/chetanbajiya/crop-yield-model/resolve/main/yield_model.pkl"
 MODEL_PATH = "/tmp/yield_model.pkl"
 
 def load_model():
     if not os.path.exists(MODEL_PATH):
-        st.info("⬇️ Downloading machine learning model...")
+        st.info("⬇️ Downloading Machine Learning Model...")
         urllib.request.urlretrieve(MODEL_URL, MODEL_PATH)
     return joblib.load(MODEL_PATH)
 
 model = load_model()
 
-# -----------------------------------------------------
-# Page Configuration
-# -----------------------------------------------------
+
+# =============================================================
+# 2️⃣ STREAMLIT PAGE CONFIG
+# =============================================================
 st.set_page_config(
     page_title="Crop Yield Prediction Dashboard",
     page_icon="🌾",
     layout="wide"
 )
 
-# -----------------------------------------------------
-# Custom CSS Styling
-# -----------------------------------------------------
+
+# =============================================================
+# 3️⃣ CUSTOM CSS (PREMIUM UI)
+# =============================================================
 st.markdown("""
 <style>
-.title {
-    font-size: 42px;
-    font-weight: 800;
-    text-align: center;
-    color: #2c3e50;
+
+body {
+    background-color: #f5f7fa;
 }
+
 .card {
     background: white;
     padding: 25px;
     border-radius: 15px;
     box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-    margin-bottom: 20px;
 }
+
 .result-card {
     background: linear-gradient(135deg, #4caf50, #2e7d32);
     color: white;
-    padding: 30px;
+    padding: 35px;
     border-radius: 20px;
     text-align: center;
     box-shadow: 0 5px 20px rgba(0,0,0,0.2);
 }
+
 .result-value {
-    font-size: 48px;
+    font-size: 50px;
     font-weight: 900;
 }
+
 </style>
 """, unsafe_allow_html=True)
 
-# -----------------------------------------------------
-# HEADER
-# -----------------------------------------------------
-st.markdown('<div class="title">🌾 Crop Yield Prediction Dashboard</div>', unsafe_allow_html=True)
-st.write("### Machine Learning powered Smart Agriculture Tool")
 
-# -----------------------------------------------------
-# SIDEBAR INPUTS
-# -----------------------------------------------------
+# =============================================================
+# 4️⃣ HEADER
+# =============================================================
+st.markdown("""
+<h1 style='text-align:center; color:#2c3e50;'>
+🌾 Advanced Crop Yield Prediction Dashboard
+</h1>
+<p style='text-align:center; font-size:18px;'>Smart ML-powered yield estimation</p>
+""", unsafe_allow_html=True)
+
+
+# =============================================================
+# 5️⃣ SIDEBAR (ALL INPUT FEATURES)
+# =============================================================
 st.sidebar.header("🔧 Input Parameters")
 
 state = st.sidebar.text_input("🏛 State Name", "Gujarat")
 district = st.sidebar.text_input("📍 District Name", "Amreli")
 crop = st.sidebar.selectbox("🌱 Crop Type", ["Wheat", "Rice", "Maize", "Cotton"])
 year = st.sidebar.number_input("📅 Crop Year", 2000, 2050, 2021)
+
 temperature = st.sidebar.number_input("🌡 Temperature (°C)", 10.0, 50.0, 28.0)
 humidity = st.sidebar.number_input("💧 Humidity (%)", 10.0, 100.0, 65.0)
 soil_moisture = st.sidebar.number_input("🌍 Soil Moisture (%)", 1.0, 60.0, 20.0)
 area = st.sidebar.number_input("📏 Cultivation Area (ha)", 0.1, 50.0, 3.0)
 
-# ✔ NEW: UNIT SELECTION
-yield_unit = st.sidebar.selectbox(
-    "📦 Yield Unit",
-    ["kg/ha", "ton/ha"]
-)
+yield_unit = "ton/ha"   # fixed unit
 
 st.sidebar.markdown("---")
 predict_button = st.sidebar.button("🚀 Predict Crop Yield", use_container_width=True)
 
-# -----------------------------------------------------
-# PREDICTION
-# -----------------------------------------------------
+
+# =============================================================
+# 6️⃣ SHOW INPUT METRICS
+# =============================================================
+col1, col2, col3 = st.columns(3)
+with col1: st.metric("🌡 Temperature", f"{temperature} °C")
+with col2: st.metric("💧 Humidity", f"{humidity} %")
+with col3: st.metric("🌍 Soil Moisture", f"{soil_moisture} %")
+
+st.markdown("---")
+
+
+# =============================================================
+# 7️⃣ PREDICT USING ML MODEL
+# =============================================================
 if predict_button:
-    with st.spinner("Running prediction..."):
+    with st.spinner("🔍 Running prediction..."):
 
         df = pd.DataFrame([{
             "State_Name": state,
@@ -107,22 +125,20 @@ if predict_button:
             "Area": area
         }])
 
+        # Predict
         pred_log = model.predict(df)
-        result_kg = np.expm1(pred_log)[0]  # base prediction in kg/ha
+        pred_kg = np.expm1(pred_log)[0]  # model output in kg/ha
+        final_yield = pred_kg / 1000     # convert to ton/ha
 
-        # ✔ Convert units
-        if yield_unit == "kg/ha":
-            final_yield = result_kg
-        else:
-            final_yield = result_kg / 1000  # kg → ton
 
-    # -----------------------------------------------------
-    # DISPLAY RESULT
-    # -----------------------------------------------------
-    st.markdown("### 📦 Prediction Output")
-    col1, col2, col3 = st.columns(3)
+    # =============================================================
+    # 8️⃣ DISPLAY OUTPUT
+    # =============================================================
+    st.markdown("## 📊 Yield Prediction Results")
 
-    with col1:
+    c1, c2, c3 = st.columns(3)
+
+    with c1:
         st.markdown(f"""
         <div class="card">
             <h4>📍 District</h4>
@@ -130,7 +146,7 @@ if predict_button:
         </div>
         """, unsafe_allow_html=True)
 
-    with col2:
+    with c2:
         st.markdown(f"""
         <div class="card">
             <h4>🌱 Crop</h4>
@@ -138,7 +154,7 @@ if predict_button:
         </div>
         """, unsafe_allow_html=True)
 
-    with col3:
+    with c3:
         st.markdown(f"""
         <div class="card">
             <h4>📅 Year</h4>
@@ -146,24 +162,23 @@ if predict_button:
         </div>
         """, unsafe_allow_html=True)
 
-    # MAIN RESULT CARD
     st.markdown(f"""
     <div class="result-card">
         <h2>🌾 Predicted Yield</h2>
-        <div class="result-value">{final_yield:.2f} {yield_unit}</div>
+        <div class="result-value">{final_yield:.2f} ton/ha</div>
     </div>
     """, unsafe_allow_html=True)
 
 
-# -----------------------------------------------------
-# FOOTER
-# -----------------------------------------------------
+# =============================================================
+# 9️⃣ FOOTER
+# =============================================================
 st.markdown("""
 ---
 ### ℹ️ Model Information
-**Algorithm:** Extra Trees Regressor  
-**Training:** 8 Feature ML Pipeline  
-**Hosting:** Hugging Face + Streamlit Cloud  
-**Developer:** Crop Yield Prediction System  
+- **Algorithm:** Extra Trees Regressor  
+- **Trained On:** 8 Feature Pipeline  
+- **Hosting:** Hugging Face + Streamlit  
+- **Developer:** Crop Yield Prediction System  
 """)
 
