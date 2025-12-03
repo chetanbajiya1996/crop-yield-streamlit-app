@@ -91,8 +91,6 @@ humidity = st.sidebar.number_input("💧 Humidity (%)", 10.0, 100.0, 65.0)
 soil_moisture = st.sidebar.number_input("🌍 Soil Moisture (%)", 1.0, 60.0, 20.0)
 area = st.sidebar.number_input("📏 Cultivation Area (ha)", 0.1, 50.0, 3.0)
 
-yield_unit = "ton/ha"   # fixed unit
-
 st.sidebar.markdown("---")
 predict_button = st.sidebar.button("🚀 Predict Crop Yield", use_container_width=True)
 
@@ -101,9 +99,13 @@ predict_button = st.sidebar.button("🚀 Predict Crop Yield", use_container_widt
 # 6️⃣ SHOW INPUT METRICS
 # =============================================================
 col1, col2, col3 = st.columns(3)
-with col1: st.metric("🌡 Temperature", f"{temperature} °C")
-with col2: st.metric("💧 Humidity", f"{humidity} %")
-with col3: st.metric("🌍 Soil Moisture", f"{soil_moisture} %")
+
+with col1:
+    st.metric("🌡 Temperature", f"{temperature} °C")
+with col2:
+    st.metric("💧 Humidity", f"{humidity} %")
+with col3:
+    st.metric("🌍 Soil Moisture", f"{soil_moisture} %")
 
 st.markdown("---")
 
@@ -127,8 +129,8 @@ if predict_button:
 
         # Predict
         pred_log = model.predict(df)
-        pred_kg = np.expm1(pred_log)[0]  # model output in kg/ha
-        final_yield = pred_kg / 1000     # convert to ton/ha
+        pred_kg = np.expm1(pred_log)[0]
+        final_yield = pred_kg / 1000
 
 
     # =============================================================
@@ -165,7 +167,7 @@ if predict_button:
     st.markdown(f"""
     <div class="result-card">
         <h2>🌾 Predicted Yield</h2>
-        <div class="result-value">{final_yield:.2f} ton/ha</div>
+        <div class="result-value">{final_yield:.2f}</div>
     </div>
     """, unsafe_allow_html=True)
 
