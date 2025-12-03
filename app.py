@@ -11,12 +11,18 @@ import os
 MODEL_URL = "https://huggingface.co/chetanbajiya/crop-yield-model/blob/main/yield_model.pkl"
 MODEL_PATH = "yield_model.pkl"
 
-@st.cache_resource
+@st.cache_resource(show_spinner=False)
 def load_model():
     if not os.path.exists(MODEL_PATH):
         st.info("⬇️ Downloading ML model from Hugging Face...")
         urllib.request.urlretrieve(MODEL_URL, MODEL_PATH)
-    return joblib.load(MODEL_PATH)
+
+    try:
+        return joblib.load(MODEL_PATH)
+    except Exception as e:
+        st.error("❌ Model loading failed. Likely due to version mismatch.")
+        st.code(str(e))
+        st.stop()
 
 model = load_model()
 
