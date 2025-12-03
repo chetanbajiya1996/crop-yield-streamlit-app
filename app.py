@@ -35,18 +35,15 @@ st.set_page_config(
 # =============================================================
 st.markdown("""
 <style>
-
 body {
     background-color: #f5f7fa;
 }
-
 .card {
     background: white;
     padding: 25px;
     border-radius: 15px;
     box-shadow: 0 4px 15px rgba(0,0,0,0.08);
 }
-
 .result-card {
     background: linear-gradient(135deg, #4caf50, #2e7d32);
     color: white;
@@ -55,12 +52,10 @@ body {
     text-align: center;
     box-shadow: 0 5px 20px rgba(0,0,0,0.2);
 }
-
 .result-value {
     font-size: 50px;
     font-weight: 900;
 }
-
 </style>
 """, unsafe_allow_html=True)
 
@@ -77,7 +72,7 @@ st.markdown("""
 
 
 # =============================================================
-# 5️⃣ SIDEBAR (ALL INPUT FEATURES)
+# 5️⃣ SIDEBAR INPUTS
 # =============================================================
 st.sidebar.header("🔧 Input Parameters")
 
@@ -91,7 +86,6 @@ humidity = st.sidebar.number_input("💧 Humidity (%)", 10.0, 100.0, 65.0)
 soil_moisture = st.sidebar.number_input("🌍 Soil Moisture (%)", 1.0, 60.0, 20.0)
 area = st.sidebar.number_input("📏 Cultivation Area (ha)", 0.1, 50.0, 3.0)
 
-st.sidebar.markdown("---")
 predict_button = st.sidebar.button("🚀 Predict Crop Yield", use_container_width=True)
 
 
@@ -99,7 +93,6 @@ predict_button = st.sidebar.button("🚀 Predict Crop Yield", use_container_widt
 # 6️⃣ SHOW INPUT METRICS
 # =============================================================
 col1, col2, col3 = st.columns(3)
-
 with col1:
     st.metric("🌡 Temperature", f"{temperature} °C")
 with col2:
@@ -111,7 +104,7 @@ st.markdown("---")
 
 
 # =============================================================
-# 7️⃣ PREDICT USING ML MODEL
+# 7️⃣ PREDICTION
 # =============================================================
 if predict_button:
     with st.spinner("🔍 Running prediction..."):
@@ -127,14 +120,15 @@ if predict_button:
             "Area": area
         }])
 
-        # Predict
-        pred_log = model.predict(df)
-        pred_kg = np.expm1(pred_log)[0]
-        final_yield = pred_kg / 1000
+        # ✅ MODEL OUTPUT ASSUMED IN kg/ha
+        yield_kg_per_ha = model.predict(df)[0]
+
+        # ✅ safety
+        yield_kg_per_ha = round(max(yield_kg_per_ha, 0), 1)
 
 
     # =============================================================
-    # 8️⃣ DISPLAY OUTPUT
+    # 8️⃣ DISPLAY RESULT
     # =============================================================
     st.markdown("## 📊 Yield Prediction Results")
 
@@ -167,7 +161,7 @@ if predict_button:
     st.markdown(f"""
     <div class="result-card">
         <h2>🌾 Predicted Yield</h2>
-        <div class="result-value">{final_yield:.2f}</div>
+        <div class="result-value">{yield_kg_per_ha}</div>
     </div>
     """, unsafe_allow_html=True)
 
@@ -179,8 +173,7 @@ st.markdown("""
 ---
 ### ℹ️ Model Information
 - **Algorithm:** Extra Trees Regressor  
-- **Trained On:** 8 Feature Pipeline  
+- **Prediction Target:** Yield (kg/ha)  
 - **Hosting:** Hugging Face + Streamlit  
 - **Developer:** Crop Yield Prediction System  
 """)
-
