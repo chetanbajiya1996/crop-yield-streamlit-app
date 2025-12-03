@@ -8,8 +8,8 @@ import os
 # =========================================================
 # 1. LOAD ML MODEL FROM HUGGING FACE
 # =========================================================
-MODEL_URL = "https://huggingface.co/chetanbajiya/crop-yield-model/blob/main/yield_model5.pkl"
-MODEL_PATH = "yield_model5.pkl"
+MODEL_URL = "https://huggingface.co/chetanbajiya/crop-yield-model/blob/main/yield_model.pkl"
+MODEL_PATH = "yield_model.pkl"
 
 @st.cache_resource
 def load_model():
