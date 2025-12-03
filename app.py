@@ -173,7 +173,8 @@ st.markdown("""
 ---
 ### ℹ️ Model Information
 - **Algorithm:** Extra Trees Regressor  
-- **Prediction Target:** Yield (kg/ha)  
+- **Prediction Target:** Yield  
 - **Hosting:** Hugging Face + Streamlit  
 - **Developer:** Crop Yield Prediction System  
 """)
+
